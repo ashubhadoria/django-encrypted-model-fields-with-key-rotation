@@ -1,4 +1,5 @@
 import itertools
+from ast import literal_eval
 
 import django.db
 import django.db.models
@@ -27,6 +28,9 @@ def get_crypter():
         raise ImproperlyConfigured('FIELD_ENCRYPTION_KEY must be defined in settings')
 
     try:
+        if isinstance(configured_keys, str) and configured_keys[0] == '[' and configured_keys[-1] == ']':
+            configured_keys = literal_eval(configured_keys)
+
         # Allow the use of key rotation
         if isinstance(configured_keys, (tuple, list)):
             keys = [parse_key(k) for k in configured_keys]
