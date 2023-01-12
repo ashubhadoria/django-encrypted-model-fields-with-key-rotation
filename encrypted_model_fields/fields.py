@@ -11,6 +11,10 @@ from django.utils.functional import cached_property
 
 import cryptography.fernet
 
+environment_keys = getattr(settings, 'FIELD_ENCRYPTION_KEY', None)
+configured_keys = None
+test_string = "testing"
+
 
 def parse_key(key):
     """
@@ -37,12 +41,16 @@ def get_crypter():
         else:
             # else turn the single key into a list of one
             keys = [parse_key(configured_keys), ]
+
+        print(configured_keys)
+        raise Exception("This is a test")
     except Exception as e:
         raise ImproperlyConfigured(f'FIELD_ENCRYPTION_KEY defined incorrectly: {str(e)}')
 
     if len(keys) == 0:
         raise ImproperlyConfigured('No keys defined in setting FIELD_ENCRYPTION_KEY')
 
+    
     return cryptography.fernet.MultiFernet(keys)
 
 
